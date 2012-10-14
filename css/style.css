@@ -1,0 +1,22 @@
+#map {
+	height: 500px;
+	width: 100%;
+	margin: 0 auto;
+}
+#modal {
+	margin-top: 5%;
+}
+#date label {
+	font-size: 18px;
+	line-height: 20px;
+	margin: 10px 0px;
+	font-family: inherit;
+	font-weight: bold;
+	line-height: 1;
+	color: inherit;
+	text-rendering: optimizelegibility;
+}
+#modal .reticulating-splines {
+	font-weight: bold;
+	font-style: italic;
+}
