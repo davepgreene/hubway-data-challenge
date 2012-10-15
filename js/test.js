@@ -1,4 +1,4 @@
-/*global $:true, L: true, console: true, HeatCanvas: true, setTimeout:true */
+/*global $:true, L: true, console: true, HeatCanvas: true, heatMap: true, setTimeout:true */
 String.prototype.pluralize = function(count, plural) {
     if (plural === null) {
         plural = this + 's';
@@ -14,7 +14,19 @@ $(function() {
     var map = new L.Map("map").setView([42.3598, -71.0851], 13);
     var layer = new L.MAPCTileLayer("basemap");
     map.addLayer(layer);
-    var heatmap = new L.TileLayer.HeatCanvas({},{/*'step':0.09,*/'step':1, 'degree':HeatCanvas.LINEAR, 'opacity':0.7});
+    //var heatmap = new L.TileLayer.HeatCanvas({},{/*'step':0.09,*/'step':1, 'degree':HeatCanvas.LINEAR, 'opacity':0.7});
+    var heatmapData = [];
+    var heatmapLayer = L.TileLayer.heatMap({
+        radius: 38,
+        opacity: 0.8,
+        gradient: {
+            0.45: "rgb(0,0,255)",
+            0.55: "rgb(0,255,255)",
+            0.65: "rgb(0,255,0)",
+            0.80: "yellow",
+            0.90: "rgb(255,0,0)"
+        }
+    });
 
     var stationLayer = L.geoJson([], {
         onEachFeature: function(feature, layer) {
@@ -86,14 +98,14 @@ $(function() {
                 pct += 1*(100/modal_denom);
                 note = pct <= 10 ? "Reticulating Splines..." : note;
                 note = pct > 10 && pct <= 20 ? "Tinkering With Internal Three-Speed" : note;
-                note = pct > 20 && pct <= 30 ? "" : note;
+                note = pct > 20 && pct <= 30 ? "Flashing LED Lights" : note;
                 note = pct > 30 && pct <= 40 ? "" : note;
-                note = pct > 40 && pct <= 50 ? "Wearing Helmet..." : note;
+                note = pct > 40 && pct <= 50 ? "Tightening Helmet Straps..." : note;
                 note = pct > 50 && pct <= 60 ? "Filling Front Rack..." : note;
                 note = pct > 60 && pct <= 70 ? "Inflating Puncture-Resistant Tires..." : note;
                 note = pct > 70 && pct <= 80 ? "Adjusting Seat Height..." : note;
-                note = pct > 80 && pct <= 90 ? "Stepping Through Frames..." : note;
-                note = pct > 90 && pct <= 100 ? "Heating-Up Heatmap..." : note;
+                note = pct > 80 && pct <= 90 ? "Stepping Through Frame..." : note;
+                note = pct > 90 && pct <= 100 ? "Heating-Up Heat Map..." : note;
                 var pct_string = pct + '%';
                 $('#modal .reticulating-splines').text(note);
                 $('#modal .bar').css('width', pct_string);
@@ -118,7 +130,12 @@ $(function() {
                         lat = station[0].lat;
                         lng = station[0].lng;
                         name_count.push([name, count]);
-                        heatmap.pushData(lat, lng, count);
+                        //heatmap.pushData(lat, lng, count);
+                        heatmapData.push({
+                            'lat': lat,
+                            'lon': lng,
+                            'value': count
+                        });
                     } else {
                         console.log(station, item);
                     }
@@ -137,9 +154,12 @@ $(function() {
 
             });
             console.log(high);
-            heatmap.heatCanvasOptions.step = 0.1;
-            $('map').trigger('viewreset');
-            map.addLayer(heatmap);
+            //heatmap.heatCanvasOptions.step = 15;
+            //heatmap.heatCanvasOptions.degree = 2;
+            //$('map').trigger('viewreset');
+            //map.addLayer(heatmap);
+            heatmapLayer.setData(heatmapData);
+            map.addLayer(heatmapLayer);
             setTimeout(function() {
                 $('#modal').modal('hide');
             }, 1500);
